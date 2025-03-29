@@ -2,10 +2,30 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
+import requests
 import os
+
+# URL del archivo en GitHub (RAW)
+file_url = "https://raw.githubusercontent.com/kevinlamro/Analisis-de-datos-universidad/main/streamlit/lugares_preferidos.xlsx"
 
 # Nombre del archivo con los datos completos
 archivo_completo = "lugares_completos.xlsx"
+archivo_origen = "lugares_preferidos.xlsx"
+
+# 📌 Si el archivo no existe en Render, descargarlo desde GitHub
+if not os.path.exists(archivo_origen):
+    try:
+        response = requests.get(file_url)
+        if response.status_code == 200:
+            with open(archivo_origen, "wb") as file:
+                file.write(response.content)
+            st.success(f"Archivo '{archivo_origen}' descargado correctamente.")
+        else:
+            st.error(f"Error al descargar el archivo: {response.status_code}")
+            st.stop()
+    except Exception as e:
+        st.error(f"Error al intentar descargar el archivo: {e}")
+        st.stop()
 
 # Verificar si ya existen los datos completos
 if os.path.exists(archivo_completo):
