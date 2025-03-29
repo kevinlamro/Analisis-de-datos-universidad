@@ -7,6 +7,7 @@ import os
 
 # URL del archivo en GitHub (RAW)
 file_url = "https://raw.githubusercontent.com/kevinlamro/Analisis-de-datos-universidad/main/streamlit/lugares_preferidos.xlsx"
+url_completos = "https://raw.githubusercontent.com/kevinlamro/Analisis-de-datos-universidad/main/streamlit/lugares_completos.xlsx"
 
 # Nombre del archivo con los datos completos
 archivo_completo = "lugares_completos.xlsx"
