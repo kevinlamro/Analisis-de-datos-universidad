@@ -8,7 +8,8 @@ import os
 # URL del archivo en GitHub (RAW)
 file_url = "https://raw.githubusercontent.com/kevinlamro/Analisis-de-datos-universidad/main/streamlit/lugares_preferidos.xlsx"
 
-# Nombre del archivo de origen
+# Nombre del archivo con los datos completos
+archivo_completo = "lugares_completos.xlsx"
 archivo_origen = "lugares_preferidos.xlsx"
 
 # 📌 Si el archivo no existe en Render, descargarlo desde GitHub
@@ -26,12 +27,41 @@ if not os.path.exists(archivo_origen):
         st.error(f"Error al intentar descargar el archivo: {e}")
         st.stop()
 
-# 📌 Cargar los datos sin modificarlos
-try:
-    df = pd.read_excel(archivo_origen)
-except Exception as e:
-    st.error(f"Error al cargar el archivo: {e}")
-    st.stop()
+# 📌 Verificar si ya existen los datos completos
+if os.path.exists(archivo_completo):
+    df = pd.read_excel(archivo_completo)
+else:
+    try:
+        df = pd.read_excel(archivo_origen)
+    except Exception as e:
+        st.error(f"Error al cargar el archivo: {e}")
+        st.stop()
+
+    # 📌 Generar datos faltantes
+    total_datos = 300
+    datos_reales = len(df)
+    datos_faltantes = total_datos - datos_reales
+
+    if datos_faltantes > 0:
+        conteo_sitios = df["sitios"].value_counts()
+        nuevos_sitios = np.random.choice(conteo_sitios.index, size=datos_faltantes, p=conteo_sitios.values / conteo_sitios.sum())
+        nuevos_niveles_satisfaccion = np.random.randint(1, 6, size=datos_faltantes)
+        carreras_existentes = df["carreras"].unique()
+        nuevas_carreras = np.random.choice(carreras_existentes, size=datos_faltantes)
+
+        nombres = ["Juan", "Santiago", "Mateo", "Valentina", "Sofía", "Andrés", "Camila", "Sebastián"]
+        apellidos = ["Gómez", "Rodríguez", "López", "Martínez", "González", "Hernández"]
+        nuevos_nombres = [f"{np.random.choice(nombres)} {np.random.choice(apellidos)}" for _ in range(datos_faltantes)]
+
+        df_nuevos = pd.DataFrame({
+            "nombres": nuevos_nombres,
+            "sitios": nuevos_sitios,
+            "nivel de satisfaccion": nuevos_niveles_satisfaccion,
+            "carreras": nuevas_carreras
+        })
+
+        df = pd.concat([df, df_nuevos], ignore_index=True)
+        df.to_excel(archivo_completo, index=False)
 
 # 📌 Análisis de datos
 moda = df["sitios"].mode()[0]
@@ -109,3 +139,4 @@ hallazgos = pd.DataFrame({
     "Valor": [moda, f"{media_satisfaccion:.2f}", f"{mediana_satisfaccion:.2f}", f"{desviacion_satisfaccion:.2f}"]
 })
 st.table(hallazgos)
+
