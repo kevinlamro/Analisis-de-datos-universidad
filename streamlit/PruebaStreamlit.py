@@ -5,13 +5,6 @@ import streamlit as st
 import requests
 import os
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import streamlit as st
-import requests
-import os
-
 # URL del archivo en GitHub (RAW)
 file_url = "https://raw.githubusercontent.com/kevinlamro/Analisis-de-datos-universidad/main/streamlit/lugares_preferidos.xlsx"
 
